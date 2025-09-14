@@ -1,0 +1,24 @@
+# MLX + CUDA 12 / Ubuntu 24.04
+FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    VIRTUAL_ENV=/opt/venv \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Python3, venv 설치
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-venv python3-pip ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# 가상환경 생성 및 활성화 경로 등록
+RUN python3 -m venv "$VIRTUAL_ENV"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# pip 업그레이드 및 MLX(CUDA 백엔드) 설치
+RUN python -m pip install --upgrade pip && \
+    python -m pip install "mlx[cuda]"
+
+# GPU 확인 기본 커맨드(원하시면 변경)
+CMD ["nvidia-smi"]

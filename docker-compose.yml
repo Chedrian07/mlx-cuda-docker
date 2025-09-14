@@ -1,25 +1,36 @@
 services:
   mlx_cuda12:
     build:
-      context: .  # build context containing the Dockerfile
-    image: mlx-cuda12:latest  # tag our built image (optional)
+      context: .
+      dockerfile: Dockerfile.cuda12
+    image: mlx-cuda12:latest
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: all        # allocate all available GPUs to this container:contentReference[oaicite:10]{index=10}
-              capabilities: [gpu]  # request GPU compute capability
-    # The above deploy section is the official way to enable NVIDIA GPUs in Compose:contentReference[oaicite:11]{index=11}.
-    # It requires Docker Compose V2 (or swarm mode) with the NVIDIA Container Toolkit installed.
-    # For older docker-compose usage, ensure the `nvidia` runtime is configured as default on the host.
-
-    # (Optional) Environment variables for NVIDIA runtime (usually not needed with deploy, but shown for completeness):
+              count: all
+              capabilities: [gpu]
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all       # Make all GPUs visible inside container
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility  # Limit to compute and utility capabilities
-    # Using these environment variables is compatible with the nvidia-docker2 setup.
-    
-    # Example command to run inside the container (overrides the CMD in Dockerfile):
-    # command: "python3 -c 'import mlx; print(\"MLX GPU:\", mlx.core.current_stream())'"
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    # 필요 시 워크디렉토리/소스 마운트:
+    # volumes:
+    #   - ./:/work
+    # working_dir: /work
 
+  mlx_cuda13:
+    build:
+      context: .
+      dockerfile: Dockerfile.cuda13
+    image: mlx-cuda13:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
